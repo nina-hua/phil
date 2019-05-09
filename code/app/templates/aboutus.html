@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+
+{% block title %}
+Phil, a travel app
+{% endblock %}
+
+
+{% block navbar %}
+  {% if loggedin %}
+    {% include 'navbar_logged_in.html' %}
+  {% else %}
+    {% include 'navbar_logged_out.html' %}
+  {% endif %}
+{% endblock %}
+
+
+{% block content %}
+<div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 850px;'/>
+  <div class='container'>
+    <br>
+                    <center><img src="{{ url_for('static',filename='img/Phil_Team.JPG') }}" height="500" ></center>
+    
+    <br>
+    <p class="lead text-white"><b>Hey!</b></p>
+    <p class="lead text-white">
+We are a group of millennials that love traveling and having fun together. Our amazing friend Phil usually plans all the details out for us. With this app we want you to have fun, just as much as if you were traveling with Phil.   
+    </p>
+    <a class="btn btn-primary btn-lg" href="/register" role="button" style="background-color: #ffae1d; border: 2px solid #ffae1d;">Get Started</a>
+    <br>
+</div>
+</div>
+{% include 'footer.html' %}
+{% endblock %}

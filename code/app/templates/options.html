@@ -1,0 +1,114 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Phil, a travel app
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_in.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+<script>
+// Basic example
+$(document).ready(function () {
+  $('#example').DataTable({
+    "pagingType": "simple", // "simple" option for 'Previous' and 'Next' buttons only
+    "order": []
+  });
+  $('.dataTables_length').addClass('bs-select');
+});
+</script>
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 2000px;'/>
+<div class="container">
+
+
+  <h2><font color="white">Trip: {{t_name}}</font></h2>
+<td> <form class="delete-form" action="{{ url_for('trip', t_name=t_name) }}" method="POST">
+      <button type="submit" class="btn btn-success btn-lg">Done</button>
+ </form></td>
+
+  <br>
+  
+{% if current_schedule|length > 0 %}
+<div class="card card-body bg-light", style="opacity: .95">
+    <h1><font size="5">Current Schedule</font></h1>
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for event in current_schedule %}
+                <tr>
+                {% if event.event_url is none %}
+                    <td> {{ event.event_name }} </td>
+                {% else %}
+                    <td> <a href="{{ event.event_url }}" style="color:#ffae1d" target="_blank"> {{ event.event_name }} </a></td>
+                {% endif %}
+                    <td> {{ event.event_desc[:100] + '...' }} </td>
+                <td> <form class="delete-form" action="{{ url_for('del_event', event_id=event.id, t_name=t_name) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+</div>
+{% endif %}
+  
+  <br>
+  
+<div class="card card-body bg-light", style="opacity: .95">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<h1><font size="5">Suggested Events</font></h1>
+        <table id="example" class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for event in events %}
+                <tr>
+                {% if event.event_url is none %}
+                    <td> {{ event.event_name }} </td>
+                {% else %}
+                    <td> <a href="{{ event.event_url }}" style="color:#ffae1d" target="_blank"> {{ event.event_name }} </a></td>
+                {% endif %}
+                    <td> {{ event.event_desc[:100] + '...' }} </td>
+                <td> <form class="delete-form" action="{{ url_for('add_event', event_id=event.id, t_name=t_name) }}" method="POST">
+                        <button type="submit" class="btn btn-warning btn-sm">Add</button>
+                    </form></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+     </div><!-- /container -->
+
+
+  </div>
+  </div>
+{% include 'footer.html' %}
+{% endblock %}

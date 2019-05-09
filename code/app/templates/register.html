@@ -1,0 +1,98 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Phil Survey
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_out.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 1250px;'/>
+<div class="container">
+
+    <form method="POST" enctype="multipart/form-data"> <!-- post : handle submission -->
+        <center>
+        <h2><font color="#ffae1d">Phil out this survey, and start your adventure!</font></h2>
+        <br>
+        {{ form.csrf_token }} <!--  render the form's CSRF field like normal.  -->
+
+        <body>
+            <div class="card card-body bg-light", style="opacity: .95">
+            <div class="form-row">
+                <div class="col-md-6">
+        <p>Username:<br>
+        {{ form.username_entry(class_="form-control", placeholder="Username") }}</p>
+                </div>
+                
+                <div class="col-md-6">
+        <p>Password:<br>
+        {{ form.password_entry(class_="form-control", placeholder="Password") }}</p>
+                </div>
+
+                <div class="col-md-6">
+        <p>First Name:<br>
+        {{ form.first_name_entry(class_="form-control", placeholder="First Name") }}</p>
+                </div>
+
+                <div class="col-md-6">
+        <p>Last Name:<br>
+        {{ form.last_name_entry(class_="form-control", placeholder="Last Name") }}</p>
+                </div>
+
+                <div class="col-md-12">
+        <p>Email:<br>
+        {{ form.email_entry(class_="form-control", placeholder="Email", style="width: 370px") }}</p>
+                </div>
+
+                <div class="col-md-12">
+        <p>Age:<br>
+        {{ form.age_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; color: #787B7E; background-color: #ffffff; border: 1px solid #D3D3D3; font-size:15px;") }}</p>
+                </div>
+            </div>
+            </div>
+        <br/>
+        <div class="card card-body bg-light", style="opacity: .95">
+        <h3><b>How likely are you to enjoy these experiences?</b></h3>
+            
+        <p>🍕 Food and Drink: <br>
+         {{ form.food_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;") }}</p>
+
+        <p>🍸 Nightlife: <br>
+        {{ form.nightlife_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+
+        <p>🖼️ Museums: <br>
+        {{ form.museums_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+
+        <p>🌳 Nature: <br>
+        {{ form.nature_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+
+        <p>🌉 Landmarks:<br>
+        {{ form.landmarks_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+
+        <p>🎵 Music:<br>
+        {{ form.music_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+
+        <p>🎭 Performing and Visual Arts:<br>
+        {{ form.performing_entry(class_="btn btn-secondary btn-lg dropdown-toggle", style="height: 37px; width: 370px; color: #787B7E; background-color: #ffffff; border: 1px solid #FF921C; font-size:15px;")  }}</p>
+        </body>
+            </div>
+        <br/>
+        {{ form.submit(class_='btn btn-primary btn-lg', style="background-color: #ffae1d; border: 2px solid #ffae1d;", 
+          onclick="gtag('event', 'click', {'event_category':'button', 'event_label':'register_submit'});") }}
+            <br>
+        </center>
+    </form>
+</div>
+</div> 
+{% include 'footer.html' %}
+{% endblock %}

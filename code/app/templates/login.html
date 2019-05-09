@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Login to Phil
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_out.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 500px;'/>
+<div class="container">
+    <div class="card card-body bg-light", style="opacity: .95">
+        <center>
+    {% include 'flash.html' %}
+    <form method="POST" enctype="multipart/form-data"> <!-- post : handle submission -->
+        <h2><font color="#ffae1d">Login</font></h2>
+        <br>
+        {{ form.csrf_token }}
+        {{ form.hidden_tag() }}
+        <p>Username:<br>
+        {{ form.username_entry(class_="form-control", placeholder="Username", style="width: 370px;") }}</p>
+        <p>Password:<br>
+        {{ form.password_entry(class_="form-control", placeholder="Password", style="width: 370px;") }}</p>
+        <center> {{ form.submit(class_='btn btn-primary btn-lg', style="background-color: #ffae1d; border: 2px solid #ffae1d;") }} </center>
+    </form>
+        </center>
+        <br>
+        <center> Don't have an account? <a href="register">Create one now!</a> </center>
+        </div> 
+</br>
+</div><!-- /container -->
+{% include 'footer.html' %}
+{% endblock %}

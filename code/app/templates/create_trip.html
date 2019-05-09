@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Phil, a travel app
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_in.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 120vh;'/>
+
+
+<div class="container">
+    {% include 'flash.html' %}
+    <form method="POST" enctype="multipart/form-data"> <!-- post : handle submission -->
+	  <div class="card card-body bg-light", style="opacity: .95">
+	    <center>   
+	    <h2><font color="#ffae1d">Create a new trip!</font></h2>
+        {{ form.csrf_token }} <!--  render the form's CSRF field like normal.  -->
+
+        <body>
+	
+        <div class="form-row">
+                <div class="col-md-12">
+        <p>Enter a unique name for this trip:<br>
+        {{ form.name_entry(class_="form-control", style="height: 37px; width: 370px;", placeholder="Example: SpringBreak") }}
+		</p>
+			</div>
+                
+                <div class="col-md-12">
+
+        <p>Where are you going?<br>
+        {{ form.where_entry(class_="form-control", style="height: 37px; width: 370px;", placeholder="San Francisco") }}
+        </p>
+			</div>
+                
+                <div class="col-md-12">
+
+        <p>Start Date:<br>
+        {{ form.start_date_entry(class_="form-control", placeholder="MM-DD-YYYY", style="height: 37px; width: 370px;") }}
+        </p>
+			</div>
+                
+                <div class="col-md-12">
+
+        <p>End Date:<br>
+        {{ form.end_date_entry(class_="form-control", placeholder="MM-DD-YYYY",style="height: 37px; width: 370px;") }}
+        </p>
+			</div>
+                
+                <div class="col-md-12">
+
+	<p>Party:<br> 
+        {{ form.party(class_="form-control", style="height: 37px; width: 370px;", placeholder="Enter emails separated by commas") }}
+        </p>
+	</div>
+            
+        <!--<p>Invite Friends:</p>
+        {{ form.usernames_entry }}
+        <br/>-->
+
+        </body>
+		
+        <br/>
+		</center>
+        <center>{{ form.submit(class_='btn btn-primary btn-lg', style="background-color: #ffae1d; border: 2px solid #ffae1d;") }}
+    <br>
+</center>
+</form>
+</div>		
+</div>
+</div> <!-- /container -->
+{% include 'footer.html' %}
+{% endblock %}
+
+

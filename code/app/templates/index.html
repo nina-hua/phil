@@ -1,0 +1,7 @@
+{% block content %}
+  {% if loggedin %}
+    {% include 'index_loggedin.html' %}
+  {% else %}
+    {% include 'index_loggedout.html' %}
+  {% endif %}
+{% endblock %}

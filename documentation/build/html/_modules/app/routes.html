@@ -1,0 +1,591 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>app.routes &#8212; Phil  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for app.routes</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">app</span> <span class="k">import</span> <span class="n">application</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">classes</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">flask_login</span> <span class="k">import</span> <span class="n">current_user</span><span class="p">,</span> <span class="n">login_user</span><span class="p">,</span> <span class="n">login_required</span><span class="p">,</span> <span class="n">logout_user</span>
+<span class="kn">from</span> <span class="nn">flask_login</span> <span class="k">import</span> <span class="n">LoginManager</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="k">import</span> <span class="n">Config</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">expanduser</span>
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+
+
+<div class="viewcode-block" id="index"><a class="viewcode-back" href="../../api.html#app.routes.index">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/index&#39;</span><span class="p">)</span>
+<span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Home page&quot;&quot;&quot;</span>
+    <span class="n">loggedin</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span>  <span class="c1"># is the user logged in?</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="n">loggedin</span><span class="o">=</span><span class="n">loggedin</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="register"><a class="viewcode-back" href="../../api.html#app.routes.register">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/register&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Sign up&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;h1&gt; Error: User already logged in. &lt;/h1&gt;&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">SurveyForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">username_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">password_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">first_name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">first_name_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">last_name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">last_name_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">email_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">age_entry</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">food</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">food_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">nightlife</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">nightlife_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">nature</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">nature_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">museums</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">museums_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">landmarks_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">music</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">music_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">performing</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">performing_entry</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">user_count</span> <span class="o">=</span> <span class="n">classes</span>\
+            <span class="o">.</span><span class="n">User</span>\
+            <span class="o">.</span><span class="n">query</span>\
+            <span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>\
+            <span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">+</span>\
+            <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">user_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&lt;h1&gt; Error - Existing user : &#39;</span> <span class="o">+</span>\
+                <span class="n">username</span> <span class="o">+</span> <span class="s1">&#39; or &#39;</span> <span class="o">+</span> <span class="n">email</span> <span class="o">+</span> <span class="s1">&#39;&lt;/h1&gt;&#39;</span> <span class="o">+</span>\
+                <span class="s1">&#39;&lt;p&gt; Please &lt;a href=&quot;/register&quot;&gt;try again.&lt;/a&gt;&lt;/p&gt;&#39;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+                                <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span>
+                                <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                                <span class="n">first_name</span><span class="o">=</span><span class="n">first_name</span><span class="p">,</span>
+                                <span class="n">last_name</span><span class="o">=</span><span class="n">last_name</span><span class="p">,</span>
+                                <span class="n">age</span><span class="o">=</span><span class="n">age</span><span class="p">,</span>
+                                <span class="n">food</span><span class="o">=</span><span class="n">food</span><span class="p">,</span>
+                                <span class="n">nightlife</span><span class="o">=</span><span class="n">nightlife</span><span class="p">,</span>
+                                <span class="n">museums</span><span class="o">=</span><span class="n">museums</span><span class="p">,</span>
+                                <span class="n">nature</span><span class="o">=</span><span class="n">nature</span><span class="p">,</span>
+                                <span class="n">landmarks</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span>
+                                <span class="n">music</span><span class="o">=</span><span class="n">music</span><span class="p">,</span>
+                                <span class="n">performing</span><span class="o">=</span><span class="n">performing</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;my_account&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;register.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+<span class="c1"># @application.route(&#39;/thanks&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</span>
+<span class="c1"># def thanks():</span>
+<span class="c1">#     return render_template(&#39;thanks.html&#39;)</span>
+
+
+<div class="viewcode-block" id="login"><a class="viewcode-back" href="../../api.html#app.routes.login">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Existing user login&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;h1&gt; Error: User already logged in. &lt;/h1&gt;&#39;</span>
+    <span class="c1"># Have user enter their email and password</span>
+    <span class="n">log_form</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">LoginForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">log_form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">log_form</span><span class="o">.</span><span class="n">username_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="n">log_form</span><span class="o">.</span><span class="n">password_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="c1"># Look for it in the database.</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+
+        <span class="c1"># Login and validate the user.</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">user</span><span class="o">.</span><span class="n">check_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+            <span class="n">login_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="c1"># redirect user to the secret page route</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;my_account&#39;</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;Invalid username and password combination!&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">log_form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../../api.html#app.routes.logout">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Allow a logded in user to logout&quot;&quot;&quot;</span>
+
+    <span class="n">logout_user</span><span class="p">()</span>
+
+    <span class="n">loggedin</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span>  <span class="c1"># is the user logged in?</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">,</span> <span class="n">loggedin</span><span class="o">=</span><span class="n">loggedin</span><span class="p">))</span></div>
+
+
+<span class="c1"># redirect unauthorize users to login page</span>
+<div class="viewcode-block" id="unauthorize"><a class="viewcode-back" href="../../api.html#app.routes.unauthorize">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">401</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">unauthorize</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;route unauthorize users to the login page&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+<span class="c1"># once logged in, login_required will fetch active user information</span>
+<div class="viewcode-block" id="my_account"><a class="viewcode-back" href="../../api.html#app.routes.my_account">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/my_account&#39;</span><span class="p">)</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">my_account</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Logged in user account page&quot;&quot;&quot;</span>
+    <span class="n">trips_results</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">creator</span><span class="o">=</span><span class="n">current_user</span><span class="o">.</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">trip_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trips_results</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;my_account.html&#39;</span><span class="p">,</span>
+                           <span class="n">name</span><span class="o">=</span><span class="n">current_user</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+                           <span class="n">email</span><span class="o">=</span><span class="n">current_user</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                           <span class="n">trip_names</span><span class="o">=</span><span class="n">trip_names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_trip"><a class="viewcode-back" href="../../api.html#app.routes.create_trip">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create_trip&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">create_trip</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Allow a user to create a new trip&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">current_user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;h1&gt; Error: Log in to create trip. &lt;/h1&gt;&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">TripForm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">name_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">where</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">where_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">creator</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">username</span>
+        <span class="c1"># invite_list = form.usernames_entry.data</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">start_date_entry</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">end_date_entry</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">trip_count</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">trip_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;ERROR: Trip &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; already exist. Please make a unique trip name.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;create_trip.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">party_username</span> <span class="o">=</span> <span class="p">[</span><span class="n">creator</span><span class="p">]</span>
+
+            <span class="n">party_entry</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">party</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">party_entry</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>  <span class="c1"># other users in trip</span>
+                <span class="c1"># look up username of emails provided</span>
+                <span class="n">party_list</span> <span class="o">=</span> <span class="n">party_entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">party_list</span><span class="p">:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">found</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># if user not found, throw error</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s1">&#39;ERROR: Email &#39;</span> <span class="o">+</span> <span class="n">p</span> <span class="o">+</span> <span class="s1">&#39; not found. Please check email is correct.&#39;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;create_trip.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">party_row</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                        <span class="n">party_username</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">party_row</span><span class="o">.</span><span class="n">username</span><span class="p">)</span>
+
+            <span class="c1"># add trip for all users</span>
+            <span class="k">for</span> <span class="n">creator</span> <span class="ow">in</span> <span class="n">party_username</span><span class="p">:</span>
+                <span class="n">trip_row</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="n">creator</span><span class="p">,</span>
+                                    <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trip_row</span><span class="p">)</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;scheduler&#39;</span><span class="p">,</span> <span class="n">t_name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;create_trip.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="trip_name"><a class="viewcode-back" href="../../api.html#app.routes.trip_name">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/trip/&lt;t_name&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">trip_name</span><span class="p">(</span><span class="n">t_name</span><span class="p">):</span>
+    <span class="n">u_name</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">username</span>
+    <span class="c1"># user must belong to trip to see trip</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">t_belong</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">u_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;&lt;p&gt;Trip </span><span class="si">{t_name}</span><span class="s1"> does not belong to you&lt;/p&gt;&#39;</span>
+
+    <span class="n">trip_results</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">t_name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">current_schedule</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;trip_details.html&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">t_name</span><span class="p">,</span> <span class="n">trip</span><span class="o">=</span><span class="n">trip_results</span><span class="p">,</span> <span class="n">current_schedule</span><span class="o">=</span><span class="n">current_schedule</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="scheduler"><a class="viewcode-back" href="../../api.html#app.routes.scheduler">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/scheduler&#39;</span><span class="p">,</span>  <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">scheduler</span><span class="p">():</span>
+    <span class="n">t_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;t_name&#39;</span><span class="p">]</span>
+    <span class="n">u_name</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">username</span>
+
+    <span class="c1"># user must belong to trip to see trip</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">t_belong</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">u_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;&lt;p&gt;Trip </span><span class="si">{t_name}</span><span class="s1"> does not belong to you&lt;/p&gt;&#39;</span>
+
+    <span class="n">trip_results</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">t_name</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># nina: get trip recommendations based on trip_results</span>
+    <span class="n">travelers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">trip_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_date</span>  <span class="c1"># get the start_date for one entry</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">trip_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_date</span>  <span class="c1"># get the end_date for one entry</span>
+    <span class="c1"># appending all creators for a trip to a list</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">trip_results</span><span class="p">:</span>
+        <span class="c1"># travelers.append(row.creator)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">creator</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">pref</span> <span class="o">=</span> <span class="p">(</span><span class="n">score</span><span class="o">.</span><span class="n">food</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="n">nightlife</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="n">museums</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="n">nature</span><span class="p">,</span>
+                <span class="n">score</span><span class="o">.</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="n">music</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="n">performing</span><span class="p">)</span>
+        <span class="n">travelers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pref</span><span class="p">)</span>
+
+    <span class="n">con</span> <span class="o">=</span> <span class="n">Config</span><span class="o">.</span><span class="n">SQLALCHEMY_DATABASE_URI</span>  <span class="c1"># get connection string to database</span>
+    <span class="n">filtered_events_df</span> <span class="o">=</span> <span class="n">query_events</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>  <span class="c1"># query events table</span>
+
+    <span class="c1"># return &quot;&lt;p&gt;&quot; + str(travelers) + &quot;&lt;/p&gt;&quot;</span>
+
+    <span class="n">recos</span> <span class="o">=</span> <span class="n">rule_rec</span><span class="p">(</span><span class="n">event_df</span><span class="o">=</span><span class="n">filtered_events_df</span><span class="p">,</span> <span class="n">user_ratings</span><span class="o">=</span><span class="n">travelers</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="c1"># populating the schedule table</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connect_to_db</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">recos</span><span class="p">:</span>
+
+        <span class="n">event_info</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># False because person hasn&#39;t selected</span>
+        <span class="n">insert_recs</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">event_info</span><span class="p">)</span>
+    <span class="n">current_schedule</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;options.html&#39;</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">recos</span><span class="p">,</span> <span class="n">t_name</span><span class="o">=</span><span class="n">t_name</span><span class="p">,</span> <span class="n">current_schedule</span><span class="o">=</span><span class="n">current_schedule</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_event"><a class="viewcode-back" href="../../api.html#app.routes.add_event">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add_event&#39;</span><span class="p">,</span>  <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">add_event</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;add event to the schedule table for trip&quot;&quot;&quot;</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span>
+    <span class="n">t_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;t_name&#39;</span><span class="p">]</span>
+
+    <span class="c1"># connect to db</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connect_to_db</span><span class="p">()</span>
+
+    <span class="c1"># insert event to schedule table</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;UPDATE public.schedule </span>
+<span class="s2">    SET selected = TRUE </span>
+<span class="s2">    WHERE (trip_name = &#39;</span><span class="si">{t_name}</span><span class="s2">&#39;) AND (event_id = </span><span class="si">{event_id}</span><span class="s2">);&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># get un-added events</span>
+    <span class="n">final_recs</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">current_schedule</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;options.html&#39;</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">final_recs</span><span class="p">,</span> <span class="n">t_name</span><span class="o">=</span><span class="n">t_name</span><span class="p">,</span> <span class="n">current_schedule</span><span class="o">=</span><span class="n">current_schedule</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="del_event"><a class="viewcode-back" href="../../api.html#app.routes.del_event">[docs]</a><span class="nd">@application</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/del_event&#39;</span><span class="p">,</span>  <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="nd">@login_required</span>
+<span class="k">def</span> <span class="nf">del_event</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;add event to the schedule table for trip&quot;&quot;&quot;</span>
+    <span class="n">event_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span>
+    <span class="n">t_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;t_name&#39;</span><span class="p">]</span>
+
+    <span class="c1"># connect to db</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connect_to_db</span><span class="p">()</span>
+
+    <span class="c1"># insert event to schedule table</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;UPDATE public.schedule </span>
+<span class="s2">    SET selected = FALSE </span>
+<span class="s2">    WHERE (trip_name = &#39;</span><span class="si">{t_name}</span><span class="s2">&#39;) AND (event_id = </span><span class="si">{event_id}</span><span class="s2">);&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># get un-added events</span>
+    <span class="n">final_recs</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">current_schedule</span> <span class="o">=</span> <span class="n">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;options.html&#39;</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">final_recs</span><span class="p">,</span> <span class="n">t_name</span><span class="o">=</span><span class="n">t_name</span><span class="p">,</span> <span class="n">current_schedule</span><span class="o">=</span><span class="n">current_schedule</span><span class="p">)</span></div>
+
+
+<span class="c1"># helper functions</span>
+<div class="viewcode-block" id="get_schedule"><a class="viewcode-back" href="../../api.html#app.routes.get_schedule">[docs]</a><span class="k">def</span> <span class="nf">get_schedule</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">suggested</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;query the schedule table to get</span>
+<span class="sd">    either suggested schedule (suggested=True)</span>
+<span class="sd">    or current schedule (suggested=False)&quot;&quot;&quot;</span>
+
+    <span class="c1"># connect to db</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">connect_to_db</span><span class="p">()</span>
+
+    <span class="c1"># get events</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;SELECT event_id </span>
+<span class="s2">     FROM public.schedule</span>
+<span class="s2">     WHERE trip_name = &#39;</span><span class="si">{t_name}</span><span class="s2">&#39; AND selected IS </span><span class="si">{suggested}</span><span class="s2">;&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="c1"># prepare data to be re-render</span>
+    <span class="n">schedule</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;SELECT id, event_name, event_desc, event_url, event_start, event_category</span>
+<span class="s2">         FROM public.events WHERE id = </span><span class="si">{event_id}</span><span class="s2">;&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="n">r_dict</span> <span class="o">=</span> <span class="n">event_row_to_dic</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+        <span class="n">schedule</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">schedule</span></div>
+
+
+<div class="viewcode-block" id="connect_to_db"><a class="viewcode-back" href="../../api.html#app.routes.connect_to_db">[docs]</a><span class="k">def</span> <span class="nf">connect_to_db</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;start a psycopg2 connection to db</span>
+<span class="sd">    return engine&quot;&quot;&quot;</span>
+    <span class="n">rds_key</span> <span class="o">=</span> <span class="n">read_key</span><span class="p">(</span><span class="s1">&#39;/rds_key&#39;</span><span class="p">)</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+        <span class="n">database</span><span class="o">=</span><span class="s2">&quot;phil_app&quot;</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="s2">&quot;phil&quot;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">rds_key</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;phil-app-db.cparuupfbjxx.us-west-2.rds.amazonaws.com&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="s1">&#39;5432&#39;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">engine</span></div>
+
+
+<div class="viewcode-block" id="event_row_to_dic"><a class="viewcode-back" href="../../api.html#app.routes.event_row_to_dic">[docs]</a><span class="k">def</span> <span class="nf">event_row_to_dic</span><span class="p">(</span><span class="n">rec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;converts a row from the event table to a dictionary&quot;&quot;&quot;</span>
+    <span class="n">r_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_category&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">r_dict</span></div>
+
+<div class="viewcode-block" id="rule_rec"><a class="viewcode-back" href="../../api.html#app.routes.rule_rec">[docs]</a><span class="k">def</span> <span class="nf">rule_rec</span><span class="p">(</span><span class="n">event_df</span><span class="p">,</span> <span class="n">user_ratings</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create event recommendations based on average of scores</span>
+<span class="sd">    event_df: Pandas dataframe of queried events</span>
+<span class="sd">    user_ratings: list of user ratings</span>
+<span class="sd">    N: number of recommendations we would output</span>
+<span class="sd">    output: list of dictionaries containing recommendation info</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">recs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># assign group_pref according to if group of users or one user</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">user_ratings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">prefs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">user_ratings</span><span class="p">)]</span>  <span class="c1"># transpose the list</span>
+        <span class="n">group_pref</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">prefs</span><span class="p">]</span>  <span class="c1"># get average preference</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">group_pref</span> <span class="o">=</span> <span class="n">user_ratings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># calculating number of recommendations to make per category</span>
+    <span class="n">group_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">group_pref</span><span class="p">)</span>
+    <span class="n">num_recs</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">pref</span> <span class="o">/</span> <span class="n">group_sum</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span> <span class="k">for</span> <span class="n">pref</span> <span class="ow">in</span> <span class="n">group_pref</span><span class="p">]</span>
+
+    <span class="c1"># putting category, number of recs into dictionary</span>
+    <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;food&#39;</span><span class="p">,</span> <span class="s1">&#39;nightlife&#39;</span><span class="p">,</span> <span class="s1">&#39;museums&#39;</span><span class="p">,</span> <span class="s1">&#39;nature&#39;</span><span class="p">,</span> <span class="s1">&#39;landmarks&#39;</span><span class="p">,</span> <span class="s1">&#39;music&#39;</span><span class="p">,</span> <span class="s1">&#39;performing&#39;</span><span class="p">],</span> <span class="n">num_recs</span><span class="p">):</span>
+        <span class="n">recs_dict</span><span class="p">[</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+
+    <span class="c1"># if the sum of recs does not equal N then add or subtract from the highest ranking category</span>
+    <span class="n">rec_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">recs_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">rec_sum</span> <span class="o">!=</span> <span class="n">N</span><span class="p">:</span>
+        <span class="c1"># get highest ranking key</span>
+        <span class="n">high_key</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">recs_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="o">-</span><span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rec_sum</span> <span class="o">-</span> <span class="n">N</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rec_sum</span> <span class="o">&gt;</span> <span class="n">N</span><span class="p">:</span>
+            <span class="c1"># subtract from the top ranking if there are more than the recs requested</span>
+            <span class="n">recs_dict</span><span class="p">[</span><span class="n">high_key</span><span class="p">]</span> <span class="o">-=</span> <span class="n">delta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add to top ranking if missing recs</span>
+            <span class="n">recs_dict</span><span class="p">[</span><span class="n">high_key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span>
+
+    <span class="c1"># make a list of recommendations based on dictionary</span>
+    <span class="c1"># select events at random</span>
+    <span class="n">rec_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cat</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">recs_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;food&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[(</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Food&#39;</span><span class="p">)</span> <span class="o">|</span>
+                              <span class="p">(</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Food &amp; Drink&#39;</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;nightlife&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;nightlife&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;museums&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Museum&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;nature&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[(</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Outdoor&#39;</span><span class="p">)</span> <span class="o">|</span>
+                              <span class="p">(</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Travel &amp; Outdoor&#39;</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;landmarks&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Landmark&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;music&#39;</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Music&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cat_df</span> <span class="o">=</span> <span class="n">event_df</span><span class="p">[</span><span class="n">event_df</span><span class="p">[</span><span class="s1">&#39;event_category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Performing &amp; Visual Arts&#39;</span><span class="p">]</span>
+
+        <span class="c1"># if the number of wanted recs is greater than number of rows in df, return all rows in df</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cat_df</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+            <span class="n">rand_recs</span> <span class="o">=</span> <span class="n">cat_df</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rand_recs</span> <span class="o">=</span> <span class="n">cat_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># unnest the list of recommendations</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rand_recs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">rand_recs</span><span class="p">:</span>
+                <span class="n">rec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_recs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">final_recs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">rec_list</span><span class="p">:</span>
+        <span class="c1"># dictionary object to hold information</span>
+        <span class="n">r_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_desc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_url&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">r_dict</span><span class="p">[</span><span class="s2">&quot;event_category&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+        <span class="n">final_recs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">final_recs</span></div>
+
+
+<div class="viewcode-block" id="query_events"><a class="viewcode-back" href="../../api.html#app.routes.query_events">[docs]</a><span class="k">def</span> <span class="nf">query_events</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">con</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    query the events table based on the start_date and end_date</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sq</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;SELECT * FROM public.events</span>
+<span class="s2">        WHERE (event_start IS NULL AND event_end IS NULL)</span>
+<span class="s2">           OR ( &#39;</span><span class="si">{0}</span><span class="s2">&#39; &lt;= event_start AND &#39;</span><span class="si">{1}</span><span class="s2">&#39; &gt;= event_end )</span>
+<span class="s2">           OR ( (&#39;</span><span class="si">{0}</span><span class="s2">&#39; &lt;= event_start AND &#39;</span><span class="si">{1}</span><span class="s2">&#39; &gt; event_start) AND event_end IS NULL )</span>
+<span class="s2">           OR ( (&#39;</span><span class="si">{0}</span><span class="s2">&#39; &lt;= event_end AND &#39;</span><span class="si">{1}</span><span class="s2">&#39; &gt;= event_end) AND event_start IS NULL );&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+
+    <span class="n">query_results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">sq</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">query_results</span></div>
+
+
+<div class="viewcode-block" id="t_belong"><a class="viewcode-back" href="../../api.html#app.routes.t_belong">[docs]</a><span class="k">def</span> <span class="nf">t_belong</span><span class="p">(</span><span class="n">t_name</span><span class="p">,</span> <span class="n">u_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;user must belong to trip to see trip&quot;&quot;&quot;</span>
+    <span class="n">belongs</span> <span class="o">=</span> <span class="n">classes</span><span class="o">.</span><span class="n">Trip</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">creator</span><span class="o">=</span><span class="n">u_name</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">t_name</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">belongs</span> <span class="o">!=</span> <span class="mi">0</span>  <span class="c1"># if result is not 0, then trip does belong</span></div>
+
+
+<div class="viewcode-block" id="read_key"><a class="viewcode-back" href="../../api.html#app.routes.read_key">[docs]</a><span class="k">def</span> <span class="nf">read_key</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;reads in secret key from file</span>
+<span class="sd">    assumes fname is at base of EC2&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">key</span></div>
+
+
+<div class="viewcode-block" id="insert_recs"><a class="viewcode-back" href="../../api.html#app.routes.insert_recs">[docs]</a><span class="k">def</span> <span class="nf">insert_recs</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;given a database connection and recommendation, insert into the schedule table&quot;&quot;&quot;</span>
+
+    <span class="n">cols</span> <span class="o">=</span> <span class="s2">&quot;(trip_name, event_id, selected)&quot;</span>
+
+    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+        <span class="n">cmd1</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;SELECT count(*) FROM public.schedule</span>
+<span class="s2">                WHERE trip_name = &#39;</span><span class="si">{e[0]}</span><span class="s2">&#39; AND event_id = </span><span class="si">{e[1]}</span><span class="s2">;&quot;&quot;&quot;</span>
+        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd1</span><span class="p">)</span>
+        <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;&quot;&quot;INSERT INTO public.schedule</span>
+<span class="s2">                </span><span class="si">{cols}</span><span class="s2"> VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;&quot;&quot;</span>
+            <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">engine</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/PHIL.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">What is Phil?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../url.html">The Phil Site</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">The Phil Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">A Phil Tutorial!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Rebecca Reilly, Victoria Suarez, Nina Hua, Viviana Márquez, Adam Reevesman.
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,677 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>API Reference &#8212; Phil  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="A Phil Tutorial!" href="tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-deploy">
+<span id="deploy-py"></span><h2>deploy.py<a class="headerlink" href="#module-deploy" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="deploy.create_or_update_environment">
+<code class="descclassname">deploy.</code><code class="descname">create_or_update_environment</code><span class="sig-paren">(</span><em>ssh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#create_or_update_environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.create_or_update_environment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create environment if non-existent,
+otherwise update the environment using the .yml file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.git_clone">
+<code class="descclassname">deploy.</code><code class="descname">git_clone</code><span class="sig-paren">(</span><em>ssh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#git_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.git_clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone a git repository - defined in user_definition.py</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.main">
+<code class="descclassname">deploy.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement ssh protocol to connect remotely to amazon server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.run_app">
+<code class="descclassname">deploy.</code><code class="descname">run_app</code><span class="sig-paren">(</span><em>ssh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#run_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.run_app" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li>kill existing gunicorn processes</li>
+<li>make daemon bash script executable</li>
+<li>run app as daemon process</li>
+<li>print app’s port number</li>
+</ol>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.set_crontab">
+<code class="descclassname">deploy.</code><code class="descname">set_crontab</code><span class="sig-paren">(</span><em>ssh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#set_crontab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.set_crontab" title="Permalink to this definition">¶</a></dt>
+<dd><p>set a crontab to run google_search.py and event_brite.py every minute</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.ssh_client">
+<code class="descclassname">deploy.</code><code class="descname">ssh_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#ssh_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.ssh_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return ssh client object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deploy.ssh_connection">
+<code class="descclassname">deploy.</code><code class="descname">ssh_connection</code><span class="sig-paren">(</span><em>ssh</em>, <em>ec2_address</em>, <em>user</em>, <em>key_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/deploy.html#ssh_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deploy.ssh_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to an SSH server and authenticate</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-app.classes">
+<span id="classes-py"></span><h2>classes.py<a class="headerlink" href="#module-app.classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="app.classes.LoginForm">
+<em class="property">class </em><code class="descclassname">app.classes.</code><code class="descname">LoginForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#LoginForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.LoginForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log in fields</p>
+<dl class="attribute">
+<dt id="app.classes.LoginForm.password_entry">
+<code class="descname">password_entry</code><em class="property"> = &lt;UnboundField(PasswordField, ('Password',), {'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.LoginForm.password_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.LoginForm.submit">
+<code class="descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Submit',), {})&gt;</em><a class="headerlink" href="#app.classes.LoginForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.LoginForm.username_entry">
+<code class="descname">username_entry</code><em class="property"> = &lt;UnboundField(StringField, ('Username', [&lt;wtforms.validators.InputRequired object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.LoginForm.username_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="app.classes.SurveyForm">
+<em class="property">class </em><code class="descclassname">app.classes.</code><code class="descname">SurveyForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#SurveyForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.SurveyForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>User survey information</p>
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.age_entry">
+<code class="descname">age_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Age',), {'choices': [('under18', 'Under 18'), ('18_24', '18 - 24'), ('25_34', '25 - 34'), ('35_44', '35 - 44'), ('45_54', '45 - 54'), ('55_64', '55 - 64'), ('65_74', '65 - 74'), ('75_84', '75 - 84'), ('older_85', '85 or older')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.age_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.email_entry">
+<code class="descname">email_entry</code><em class="property"> = &lt;UnboundField(EmailField, ('Email', [&lt;wtforms.validators.InputRequired object&gt;, &lt;wtforms.validators.Email object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.email_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.first_name_entry">
+<code class="descname">first_name_entry</code><em class="property"> = &lt;UnboundField(StringField, ('First Name', [&lt;wtforms.validators.InputRequired object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.first_name_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.food_entry">
+<code class="descname">food_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in &quot;Food and Drinks&quot; experiences: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.food_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.landmarks_entry">
+<code class="descname">landmarks_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in visiting landmarks: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.landmarks_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.last_name_entry">
+<code class="descname">last_name_entry</code><em class="property"> = &lt;UnboundField(StringField, ('Last Name', [&lt;wtforms.validators.InputRequired object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.last_name_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.museums_entry">
+<code class="descname">museums_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in visiting museums: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.museums_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.music_entry">
+<code class="descname">music_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in listening to concerts: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.music_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.nature_entry">
+<code class="descname">nature_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in &quot;Nature&quot; experiences: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.nature_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.nightlife_entry">
+<code class="descname">nightlife_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in &quot;Night Life&quot; experiences: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.nightlife_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.password_entry">
+<code class="descname">password_entry</code><em class="property"> = &lt;UnboundField(PasswordField, ('Password', [&lt;wtforms.validators.InputRequired object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.password_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.performing_entry">
+<code class="descname">performing_entry</code><em class="property"> = &lt;UnboundField(SelectField, ('Rate your interest in Performing &amp; Visual Arts: ',), {'choices': [('5', 'Very Interested'), ('4', 'Interested'), ('3', 'Neither'), ('2', 'Not really interested'), ('1', 'Not interested at all')], 'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.performing_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.submit">
+<code class="descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Submit',), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.SurveyForm.username_entry">
+<code class="descname">username_entry</code><em class="property"> = &lt;UnboundField(StringField, ('Username', [&lt;wtforms.validators.InputRequired object&gt;]), {})&gt;</em><a class="headerlink" href="#app.classes.SurveyForm.username_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="app.classes.Trip">
+<em class="property">class </em><code class="descclassname">app.classes.</code><code class="descname">Trip</code><span class="sig-paren">(</span><em>name</em>, <em>where</em>, <em>start_date</em>, <em>end_date</em>, <em>creator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#Trip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.Trip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trip object</p>
+<dl class="attribute">
+<dt id="app.classes.Trip.creator">
+<code class="descname">creator</code><a class="headerlink" href="#app.classes.Trip.creator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.Trip.end_date">
+<code class="descname">end_date</code><a class="headerlink" href="#app.classes.Trip.end_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.Trip.id">
+<code class="descname">id</code><a class="headerlink" href="#app.classes.Trip.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.Trip.name">
+<code class="descname">name</code><a class="headerlink" href="#app.classes.Trip.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.Trip.start_date">
+<code class="descname">start_date</code><a class="headerlink" href="#app.classes.Trip.start_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.Trip.where">
+<code class="descname">where</code><a class="headerlink" href="#app.classes.Trip.where" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="app.classes.TripForm">
+<em class="property">class </em><code class="descclassname">app.classes.</code><code class="descname">TripForm</code><span class="sig-paren">(</span><em>formdata=&lt;object object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#TripForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.TripForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trip survey information</p>
+<dl class="attribute">
+<dt id="app.classes.TripForm.end_date_entry">
+<code class="descname">end_date_entry</code><em class="property"> = &lt;UnboundField(DateField, ('End Date',), {'format': '%m-%d-%Y'})&gt;</em><a class="headerlink" href="#app.classes.TripForm.end_date_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.TripForm.name_entry">
+<code class="descname">name_entry</code><em class="property"> = &lt;UnboundField(StringField, ('Trip Name',), {'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.TripForm.name_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.TripForm.party">
+<code class="descname">party</code><em class="property"> = &lt;UnboundField(StringField, ('party',), {})&gt;</em><a class="headerlink" href="#app.classes.TripForm.party" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.TripForm.start_date_entry">
+<code class="descname">start_date_entry</code><em class="property"> = &lt;UnboundField(DateField, ('Start Date',), {'validators': [&lt;wtforms.validators.InputRequired object&gt;], 'format': '%m-%d-%Y'})&gt;</em><a class="headerlink" href="#app.classes.TripForm.start_date_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.TripForm.submit">
+<code class="descname">submit</code><em class="property"> = &lt;UnboundField(SubmitField, ('Submit',), {})&gt;</em><a class="headerlink" href="#app.classes.TripForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.TripForm.where_entry">
+<code class="descname">where_entry</code><em class="property"> = &lt;UnboundField(StringField, ('Where',), {'validators': [&lt;wtforms.validators.InputRequired object&gt;]})&gt;</em><a class="headerlink" href="#app.classes.TripForm.where_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="app.classes.User">
+<em class="property">class </em><code class="descclassname">app.classes.</code><code class="descname">User</code><span class="sig-paren">(</span><em>username</em>, <em>email</em>, <em>password</em>, <em>first_name</em>, <em>last_name</em>, <em>age</em>, <em>food</em>, <em>nightlife</em>, <em>museums</em>, <em>nature</em>, <em>landmarks</em>, <em>music</em>, <em>performing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#User"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>User object</p>
+<dl class="attribute">
+<dt id="app.classes.User.age">
+<code class="descname">age</code><a class="headerlink" href="#app.classes.User.age" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="app.classes.User.check_password">
+<code class="descname">check_password</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#User.check_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.User.check_password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.email">
+<code class="descname">email</code><a class="headerlink" href="#app.classes.User.email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.first_name">
+<code class="descname">first_name</code><a class="headerlink" href="#app.classes.User.first_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.food">
+<code class="descname">food</code><a class="headerlink" href="#app.classes.User.food" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.id">
+<code class="descname">id</code><a class="headerlink" href="#app.classes.User.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.landmarks">
+<code class="descname">landmarks</code><a class="headerlink" href="#app.classes.User.landmarks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.last_name">
+<code class="descname">last_name</code><a class="headerlink" href="#app.classes.User.last_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.museums">
+<code class="descname">museums</code><a class="headerlink" href="#app.classes.User.museums" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.music">
+<code class="descname">music</code><a class="headerlink" href="#app.classes.User.music" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.nature">
+<code class="descname">nature</code><a class="headerlink" href="#app.classes.User.nature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.nightlife">
+<code class="descname">nightlife</code><a class="headerlink" href="#app.classes.User.nightlife" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.password_hash">
+<code class="descname">password_hash</code><a class="headerlink" href="#app.classes.User.password_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.performing">
+<code class="descname">performing</code><a class="headerlink" href="#app.classes.User.performing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="app.classes.User.set_password">
+<code class="descname">set_password</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#User.set_password"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.User.set_password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="app.classes.User.username">
+<code class="descname">username</code><a class="headerlink" href="#app.classes.User.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="app.classes.load_user">
+<code class="descclassname">app.classes.</code><code class="descname">load_user</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/classes.html#load_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.classes.load_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>load current user based on their ID</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-app.routes">
+<span id="routes-py"></span><h2>routes.py<a class="headerlink" href="#module-app.routes" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="app.routes.add_event">
+<code class="descclassname">app.routes.</code><code class="descname">add_event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#add_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.add_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>add event to the schedule table for trip</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.connect_to_db">
+<code class="descclassname">app.routes.</code><code class="descname">connect_to_db</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#connect_to_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.connect_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>start a psycopg2 connection to db
+return engine</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.create_trip">
+<code class="descclassname">app.routes.</code><code class="descname">create_trip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#create_trip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.create_trip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow a user to create a new trip</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.del_event">
+<code class="descclassname">app.routes.</code><code class="descname">del_event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#del_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.del_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>add event to the schedule table for trip</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.event_row_to_dic">
+<code class="descclassname">app.routes.</code><code class="descname">event_row_to_dic</code><span class="sig-paren">(</span><em>rec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#event_row_to_dic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.event_row_to_dic" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a row from the event table to a dictionary</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.get_schedule">
+<code class="descclassname">app.routes.</code><code class="descname">get_schedule</code><span class="sig-paren">(</span><em>t_name</em>, <em>suggested=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#get_schedule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.get_schedule" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the schedule table to get
+either suggested schedule (suggested=True)
+or current schedule (suggested=False)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.index">
+<code class="descclassname">app.routes.</code><code class="descname">index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Home page</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.insert_recs">
+<code class="descclassname">app.routes.</code><code class="descname">insert_recs</code><span class="sig-paren">(</span><em>engine</em>, <em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#insert_recs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.insert_recs" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a database connection and recommendation, insert into the schedule table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.login">
+<code class="descclassname">app.routes.</code><code class="descname">login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Existing user login</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.logout">
+<code class="descclassname">app.routes.</code><code class="descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow a logded in user to logout</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.my_account">
+<code class="descclassname">app.routes.</code><code class="descname">my_account</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#my_account"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.my_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logged in user account page</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.query_events">
+<code class="descclassname">app.routes.</code><code class="descname">query_events</code><span class="sig-paren">(</span><em>start_date</em>, <em>end_date</em>, <em>con</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#query_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.query_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>query the events table based on the start_date and end_date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.read_key">
+<code class="descclassname">app.routes.</code><code class="descname">read_key</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#read_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.read_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads in secret key from file
+assumes fname is at base of EC2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.register">
+<code class="descclassname">app.routes.</code><code class="descname">register</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sign up</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.rule_rec">
+<code class="descclassname">app.routes.</code><code class="descname">rule_rec</code><span class="sig-paren">(</span><em>event_df</em>, <em>user_ratings</em>, <em>N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#rule_rec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.rule_rec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create event recommendations based on average of scores
+event_df: Pandas dataframe of queried events
+user_ratings: list of user ratings
+N: number of recommendations we would output
+output: list of dictionaries containing recommendation info</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.scheduler">
+<code class="descclassname">app.routes.</code><code class="descname">scheduler</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.scheduler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="app.routes.t_belong">
+<code class="descclassname">app.routes.</code><code class="descname">t_belong</code><span class="sig-paren">(</span><em>t_name</em>, <em>u_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#t_belong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.t_belong" title="Permalink to this definition">¶</a></dt>
+<dd><p>user must belong to trip to see trip</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.routes.trip_name">
+<code class="descclassname">app.routes.</code><code class="descname">trip_name</code><span class="sig-paren">(</span><em>t_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#trip_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.trip_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="app.routes.unauthorize">
+<code class="descclassname">app.routes.</code><code class="descname">unauthorize</code><span class="sig-paren">(</span><em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/routes.html#unauthorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.routes.unauthorize" title="Permalink to this definition">¶</a></dt>
+<dd><p>route unauthorize users to the login page</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.google_search">
+<span id="google-search-py"></span><h2>google_search.py<a class="headerlink" href="#module-api.google_search" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="api.google_search.clean_text">
+<code class="descclassname">api.google_search.</code><code class="descname">clean_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#clean_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.clean_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a string, remove any tabs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.get_attractions">
+<code class="descclassname">api.google_search.</code><code class="descname">get_attractions</code><span class="sig-paren">(</span><em>attractions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#get_attractions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.get_attractions" title="Permalink to this definition">¶</a></dt>
+<dd><p>updates data for attraction event</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.insert_attraction">
+<code class="descclassname">api.google_search.</code><code class="descname">insert_attraction</code><span class="sig-paren">(</span><em>engine</em>, <em>att</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#insert_attraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.insert_attraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a database connection and
+a tabular form of a google event,
+insert into the attractions table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.make_attraction">
+<code class="descclassname">api.google_search.</code><code class="descname">make_attraction</code><span class="sig-paren">(</span><em>engine</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#make_attraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.make_attraction" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a database connection,
+create an attraction table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.make_tabular_google">
+<code class="descclassname">api.google_search.</code><code class="descname">make_tabular_google</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#make_tabular_google"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.make_tabular_google" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a json object from google search api,
+manipulate results into tabular form</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.read_key">
+<code class="descclassname">api.google_search.</code><code class="descname">read_key</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#read_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.read_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads in secret key from file
+assumes fname is at base of EC2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.table_exist">
+<code class="descclassname">api.google_search.</code><code class="descname">table_exist</code><span class="sig-paren">(</span><em>engine</em>, <em>table_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#table_exist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.table_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>given an database connection and table,
+check if table exist in database. return true &amp; false</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.google_search.term_search_api">
+<code class="descclassname">api.google_search.</code><code class="descname">term_search_api</code><span class="sig-paren">(</span><em>term</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/google_search.html#term_search_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.google_search.term_search_api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses Google’s Place Search API
+Given a search term, will search for place and
+return information about the place as json</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-api.eventbrite_search">
+<span id="eventbrite-search-py"></span><h2>eventbrite_search.py<a class="headerlink" href="#module-api.eventbrite_search" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="api.eventbrite_search.clean_text">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">clean_text</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#clean_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.clean_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a string, remove any tabs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.get_events">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">get_events</code><span class="sig-paren">(</span><em>categories</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#get_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.get_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>using Eventbrites api
+given a dictionary:</p>
+<blockquote>
+<div>key: category id (specified by eventbrite)
+value: category names</div></blockquote>
+<p>return list of json files for each category</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.insert_event">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">insert_event</code><span class="sig-paren">(</span><em>engine</em>, <em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#insert_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.insert_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a database connection and
+a tabular form of a eventbrite event,
+insert into the events table
+if event does not exit in table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.make_events">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">make_events</code><span class="sig-paren">(</span><em>engine</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#make_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.make_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a database connection,
+create an events table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.make_tabular_eb">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">make_tabular_eb</code><span class="sig-paren">(</span><em>event</em>, <em>cat_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#make_tabular_eb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.make_tabular_eb" title="Permalink to this definition">¶</a></dt>
+<dd><p>given a json object from eventbrite api,
+manipulate results into tabular form</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.read_key">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">read_key</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#read_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.read_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>reads in secret key from file
+assumes fname is at base of EC2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="api.eventbrite_search.table_exist">
+<code class="descclassname">api.eventbrite_search.</code><code class="descname">table_exist</code><span class="sig-paren">(</span><em>engine</em>, <em>table_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/eventbrite_search.html#table_exist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#api.eventbrite_search.table_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>given an database connection and table,
+check if table exist in database. return true &amp; false</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/PHIL.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">What is Phil?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="url.html">The Phil Site</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">The Phil Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">A Phil Tutorial!</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-deploy">deploy.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-app.classes">classes.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-app.routes">routes.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-api.google_search">google_search.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-api.eventbrite_search">eventbrite_search.py</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tutorial.html" title="previous chapter">A Phil Tutorial!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Rebecca Reilly, Victoria Suarez, Nina Hua, Viviana Márquez, Adam Reevesman.
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

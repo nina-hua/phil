@@ -1,0 +1,50 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Phil, a travel app
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_in.html' %}
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 1190px;'/>
+<div class="container">
+  
+  <h1><font color="#ffffff">Welcome, {{name}}! </font></h1>
+      <div style="padding-left: 30px;">
+      <a class="btn btn-primary btn-lg" href="/create_trip" role="button" style="background-color: #ffae1d; border: 2px solid #ffae1d;">Plan a New Trip</a>
+      </div><br>
+    
+<br>
+  <div class="card card-body bg-light", style="opacity: .95">
+   
+      {% if trip_names|length > 0 %}
+      <h3> Your Trips: </h3>
+          <div style="padding-left: 30px;">
+            <div class="form-row">
+          {% for trip_name in trip_names%}
+              <div class="col-md-6">
+              <p><h4><a href="/trip?t_name={{ trip_name }}" style="color:#ffae1d" >• {{ trip_name }}</a></h4></p>
+              </div>
+          {% endfor %}
+            </div> 
+          </div>
+      {% endif %}
+      <br>
+  </div>
+  </div>
+  </div>
+<!--<p>{{ trip_names }}</p>-->
+<!--<p>Click <a href="/my_trips">here</a> to see your trips!</p>-->
+{% include 'footer.html' %}
+{% endblock %}

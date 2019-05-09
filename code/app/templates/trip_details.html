@@ -1,0 +1,82 @@
+{% extends "bootstrap/base.html" %}
+
+{% block head %}
+  {{ super() }}
+  {% include 'head.html' %}
+{% endblock %}
+
+{% block title %}
+Phil, a travel app
+{% endblock %}
+
+{% block navbar %}
+    {% include 'navbar_logged_in.html' %}
+{% endblock %}
+
+{% block content %}
+ <div class="jumbotron jumbotron-fluid" style = 'background-image: url(static/img/gg_bg_muted.png);
+  background-size: cover;
+  background-position: center center;
+  height: 1190px;'/>
+<div class="container">
+
+<h1><font color="#ffffff">Trip: {{name}}</font></h1>
+    {% if trip|length > 0 %}
+  <div style="padding-left: 0px; padding-right: 550px;">
+      <ul class="list-group">
+      <li class="list-group-item" style="background-color: #ffae1d;">Attendees</li>
+        {% for t in trip %}
+        <li class="list-group-item"><font color="#A9A9A9"> {{ t.creator }} </font></li>
+        {% endfor %}
+  </ul>
+     </div>
+    <br>
+    {% endif %}
+  
+
+{% if current_schedule|length > 0 %}
+<div class="card card-body bg-light", style="opacity: .95">
+    <h4>Current Schedule</h4>
+    <td> <form class="delete-form" action="{{ url_for('scheduler', t_name=name) }}" method="POST">
+        <button type="submit" class="btn btn-primary btn-md" style="background-color: #ffae1d; border: 2px solid #ffae1d;">Edit</button>
+    </form></td>
+
+        <br />
+        <table class="table table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for event in current_schedule %}
+                <tr>
+                {% if event.event_url is none %}
+                    <td> {{ event.event_name }} </td>
+                {% else %}
+                    <td> <a href="{{ event.event_url }}" style="color:#ffae1d" target="_blank"> {{ event.event_name }} </a></td>
+                {% endif %}
+                    <td> {{ event.event_desc[:100] + '...' }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br/>
+    </div>
+  
+  {%  else %}
+      <td> <form class="delete-form" action="{{ url_for('scheduler', t_name=name) }}" method="POST">
+          <button type="submit" class="btn btn-primary btn-md" style="background-color: #ffae1d; border: 2px solid #ffae1d;">Start Planning</button>
+      </form></td>
+  {% endif %}
+
+  
+
+</div>
+</div>
+<!--<p>{{ trip_names }}</p>-->
+<!--<p>{{ trip_names }}</p>-->
+<!--<p>Click <a href="/my_trips">here</a> to see your trips!</p>-->
+{% include 'footer.html' %}
+{% endblock %}
